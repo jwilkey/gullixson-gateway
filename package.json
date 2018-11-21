@@ -7,6 +7,7 @@
     "dev": "nodemon DEBUG=gullixson-gateway:* npm start"
   },
   "dependencies": {
+    "atob": "^2.1.2",
     "cookie-parser": "~1.4.3",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
