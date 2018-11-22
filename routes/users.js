@@ -1,7 +1,7 @@
 var express = require('express')
 var router = express.Router()
 
-router.get('/appointments/:id', (req, res) => {
+router.get('/:id/appointments', (req, res) => {
   res.json(appointments)
 })
 

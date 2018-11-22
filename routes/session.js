@@ -6,7 +6,7 @@ router.post('/', (req, res) => {
   const password = atob(req.body.password)
   console.log(password)
   if (password === 'red') {
-    res.json({ id: '111', type: 'admin' })
+    res.json({ id: '111', type: 'realtor' })
   } else if (password === 'yellow fin') {
     res.json({ id: '222', type: 'client' })
   } else {
