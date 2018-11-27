@@ -6,6 +6,10 @@ router.get('/:id/appointments', (req, res) => {
   res.json(req.params.id === '333' ? appointments333 : appointments222)
 })
 
+router.post('/appointments', (req, res) => {
+  res.json({success: true})
+})
+
 module.exports = router
 
 const appointments333 = {

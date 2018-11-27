@@ -9,6 +9,8 @@ router.post('/', (req, res) => {
     res.json({ id: '111', type: 'realtor' })
   } else if (password === 'yellow fin') {
     res.json({ id: '222', type: 'client' })
+  } else if (password === 'lark') {
+    res.json({ id: '333', type: 'client' })
   } else {
     res.status(401).send('Unauthorized')
   }
