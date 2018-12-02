@@ -1,26 +1,45 @@
+const database = require('./database')
+
+const statusSort = { declined: -2, canceled: -1, pending: 0, scheduled: 1, completed: 10 }
+
 module.exports = {
+  async createAppointment (userId, date, time, status) {
+    const insertAppointmentQuery = `
+      INSERT INTO appointments (date, time, status) VALUES (
+        '${date}', '${time}', '${status}'
+      ) RETURNING *;`
+    const rows = await database.query(insertAppointmentQuery)
+    console.log('APPT INSERT', rows)
+
+    const apptId = rows[0].id
+    const usersAppointmentsQuery = `
+      INSERT INTO usersAppointments (userId, appointmentId) 
+      VALUES ('${userId}', '${apptId}');
+    `
+    return database.query(usersAppointmentsQuery)
+  },
   async getAppointments (userId) {
-    return Promise.resolve(userId === '222' ? appointments222 : appointments333)
+    const query = `SELECT appointments.id, appointments.date, appointments.time, appointments.status ` +
+    `FROM appointments, usersAppointments ` +
+    `WHERE appointments.id = usersAppointments.appointmentId ` +
+    `AND usersAppointments.userId = ${userId};`
+    return database.query(query)
+      .then(rows => {
+        return rows.sort((a1, a2) => statusSort[a1.status] - statusSort[a2.status])
+      })
   },
   async updateAppointment (appointment) {
-    return Promise.resolve(true)
+    const query = `
+      UPDATE appointments SET date = '${appointment.date}', time = '${appointment.time}', status = '${appointment.status}' 
+      WHERE id = ${appointment.id} 
+      RETURNING *;
+    `
+    return database.query(query)
+  },
+  async deleteAppointment (appointment) {
+    const query = `
+      DELETE FROM appointments WHERE id = '${appointment.id}'
+    `
+    return database.query(query)
   }
-}
-
-let appointments = [
-
-]
-
-const appointments333 = {
-  pending: [{date: '2018-12-30', time: '17:33', status: 'pending'}],
-  declined: [{date: '2018-10-30', time: '9:33', status: 'declined'}],
-  scheduled: [],
-  completed: [{date: '2018-11-12', time: '7:33', status: 'completed'}, {date: '2018-11-17', time: '9:33', status: 'completed'}]
-}
-
-const appointments222 = {
-  pending: [],
-  declined: [],
-  scheduled: [{date: '2018-12-28', time: '11:33', status: 'scheduled'}, {date: '2019-2-8', time: '10:43', status: 'scheduled'}],
-  completed: []
 }

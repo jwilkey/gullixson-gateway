@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "nodemon DEBUG=gullixson-gateway:* npm start"
+    "dev": "source ignore/local.sh && nodemon DEBUG=gullixson-gateway:* npm start",
+    "migrate": "source ignore/local.sh && node ./db/migrator.js",
+    "db_reset": "source ignore/local.sh && node ./db/reset.js"
   },
   "dependencies": {
     "atob": "^2.1.2",
@@ -18,6 +20,8 @@
     "pg": "^7.6.1"
   },
   "devDependencies": {
-    "nodemon": "^1.18.6"
+    "nodemon": "^1.18.6",
+    "postgres-migrations": "^2.0.3",
+    "standard": "^12.0.1"
   }
 }

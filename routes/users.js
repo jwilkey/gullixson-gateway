@@ -1,15 +1,31 @@
 var express = require('express')
 var router = express.Router()
 const appointmentsRepository = require('../js/appointments-repository')
+const usersRepository = require('../js/users-repository')
+
+router.post('/', async (req, res) => {
+  await usersRepository.createUser(req.body.email, req.body.password, req.body.name, req.body.role)
+  res.json({ success: true })
+})
 
 router.get('/:id/appointments', async (req, res) => {
   const appointments = await appointmentsRepository.getAppointments(req.params.id)
   res.json(appointments)
 })
 
+router.post('/:id/appointments', async (req, res) => {
+  await appointmentsRepository.createAppointment(req.params.id, req.body.date, req.body.time, req.body.status)
+  res.json({ success: true })
+})
+
 router.post('/appointments', async (req, res) => {
-  await appointmentsRepository.updateAppointment(req.body)
-  res.json({success: true})
+  const updated = await appointmentsRepository.updateAppointment(req.body)
+  res.json(updated)
+})
+
+router.delete('/appointments', async (req, res) => {
+  await appointmentsRepository.deleteAppointment(req.body)
+  res.json({ success: true })
 })
 
 module.exports = router
