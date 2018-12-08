@@ -3,13 +3,12 @@ var pdfFiller = require('pdffiller')
 module.exports = {
   async fillTds (options) {
     return new Promise((resolve, reject) => {
-      var sourcePDF = '../forms/tds.pdf'
-      var nameRegex = null
+      var sourcePDF = require.resolve('../forms/tds.pdf')
+      var destinationPDF = sourcePDF.replace('tds.pdf', 'tds_filled.pdf')
 
-      var template = pdfFiller.generateFDFTemplate(sourcePDF, nameRegex, (err, fdfData) => {
+      pdfFiller.fillForm(sourcePDF, destinationPDF, options, function (err) {
         if (err) throw err
-        console.log(fdfData)
-        resolve('../forms/tds.pdf')
+        resolve(destinationPDF)
       })
     })
   }
