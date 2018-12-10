@@ -7,4 +7,9 @@ router.get('/clients', async (req, res) => {
   res.json(clients)
 })
 
+router.delete('/clients/:id', async (req, res) => {
+  await usersRepository.deleteUser(req.params.id)
+  res.json({ deleted: true })
+})
+
 module.exports = router

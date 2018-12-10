@@ -9,7 +9,6 @@ module.exports = {
         '${date}', '${time}', '${status}'
       ) RETURNING *;`
     const rows = await database.query(insertAppointmentQuery)
-    console.log('APPT INSERT', rows)
 
     const apptId = rows[0].id
     const usersAppointmentsQuery = `

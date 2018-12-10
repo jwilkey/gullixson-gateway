@@ -5,8 +5,13 @@ const usersRepository = require('../js/users-repository')
 const formFiller = require('../js/form-filler')
 
 router.post('/', async (req, res) => {
-  await usersRepository.createUser(req.body.email, req.body.password, req.body.name, req.body.role)
+  await usersRepository.createUser(req.body.email, req.body.password, req.body.name, req.body.role, req.body.property)
   res.json({ success: true })
+})
+
+router.get('/:id/property', async (req, res) => {
+  const property = await usersRepository.getProperty(req.params.id)
+  res.json(property)
 })
 
 router.get('/:id/appointments', async (req, res) => {
