@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS usersState (
+  userId int REFERENCES users(id) ON DELETE CASCADE,
+  key VARCHAR NOT NULL,
+  value VARCHAR NOT NULL,
+  PRIMARY KEY (userId, key)
+);

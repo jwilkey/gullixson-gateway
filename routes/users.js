@@ -24,6 +24,16 @@ router.post('/:id/appointments', async (req, res) => {
   res.json({ success: true })
 })
 
+router.get('/:id/state/:key', async (req, res) => {
+  const state = await usersRepository.getUserState(req.params.id, req.params.key)
+  res.json(state)
+})
+
+router.post('/:id/state', async (req, res) => {
+  await usersRepository.saveUserState(req.params.id, req.body.key, req.body.value)
+  res.json({ success: true })
+})
+
 router.post('/:id/forms/tds', async (req, res) => {
   const form = await formFiller.fillTds(req.body)
   res.download(form)

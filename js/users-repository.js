@@ -23,6 +23,18 @@ module.exports = {
   async deleteUser (userId) {
     return database.query(`DELETE FROM users WHERE id = '${userId}'`)
   },
+  async saveUserState (userId, key, value) {
+    const valueString = JSON.stringify(value)
+    const query = `INSERT INTO usersState (userId, key, value)
+      VALUES ( ${userId}, '${key}', '${valueString}' ) 
+      ON CONFLICT ON CONSTRAINT usersstate_pkey 
+      DO UPDATE SET value = '${valueString}';`
+    return database.query(query)
+  },
+  async getUserState (userId, key) {
+    const rows = await database.query(`SELECT * FROM usersState WHERE userId = '${userId}' AND key = '${key}';`)
+    return rows.length === 1 ? safeParse(rows[0]) : {}
+  },
   createProperty,
   async getUser (email, password) {
     const pass = atob(password)
@@ -49,4 +61,11 @@ module.exports = {
     return database.query(`SELECT id FROM users WHERE id = '${userId}' AND role = 'realtor'`)
       .then(rows => rows.length === 1)
   }
+}
+
+const safeParse = (row) => {
+  try {
+    row.value = JSON.parse(row.value)
+  } catch (e) { }
+  return row
 }
