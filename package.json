@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "atob": "^2.1.2",
+    "aws-sdk": "^2.374.0",
     "cookie-parser": "~1.4.3",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
@@ -18,7 +19,8 @@
     "jade": "~1.11.0",
     "morgan": "~1.9.0",
     "pdffiller": "0.0.10",
-    "pg": "^7.6.1"
+    "pg": "^7.6.1",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "nodemon": "^1.18.6",

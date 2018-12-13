@@ -11,6 +11,7 @@ var sessionRouter = require('./routes/session')
 var listingsRouter = require('./routes/listings')
 var usersRouter = require('./routes/users')
 var realtorsRouter = require('./routes/realtors')
+const dbRouter = require('./routes/db')
 
 var app = express()
 
@@ -26,6 +27,7 @@ app.use('/session', sessionRouter)
 app.use('/listings', listingsRouter)
 app.use('/users', usersRouter)
 app.use('/realtors', adminGuard, realtorsRouter)
+app.use('/db', dbRouter)
 
 async function adminGuard (req, res, next) {
   if (await usersRepository.isAdmin(req.headers.token)) {

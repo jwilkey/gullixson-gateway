@@ -3,6 +3,7 @@ var router = express.Router()
 const appointmentsRepository = require('../js/appointments-repository')
 const usersRepository = require('../js/users-repository')
 const formFiller = require('../js/form-filler')
+const aws = require('../js/aws')
 
 router.post('/', async (req, res) => {
   await usersRepository.createUser(req.body.email, req.body.password, req.body.name, req.body.role, req.body.property)
@@ -35,8 +36,24 @@ router.post('/:id/state', async (req, res) => {
 })
 
 router.post('/:id/forms/tds', async (req, res) => {
-  const form = await formFiller.fillTds(req.body)
-  res.download(form)
+  const file = await formFiller.fillTds(req.body, req.params.id)
+  res.json({ file })
+})
+
+router.get('/:id/files/:file', async (req, res) => {
+  const awsResource = await aws.get(req.params.file)
+  res.attachment(req.params.file)
+  res.send(awsResource.Body)
+})
+
+router.get('/:id/files/url/:file', async (req, res) => {
+  const url = aws.getSignedUrl(req.params.file)
+  res.json({ url })
+})
+
+router.get('/:id/files', async (req, res) => {
+  const list = await aws.list(req.params.id)
+  res.json(list)
 })
 
 router.post('/appointments', async (req, res) => {
