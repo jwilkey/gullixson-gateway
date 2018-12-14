@@ -24,6 +24,11 @@ module.exports = {
     `AND usersAppointments.userId = ${userId};`
     return database.query(query)
       .then(rows => {
+        rows.forEach(a => {
+          if (a.status === 'scheduled' && new Date(a.date + ', 22:00') < new Date()) {
+            a.status = 'completed'
+          }
+        })
         return rows.sort((a1, a2) => statusSort[a1.status] - statusSort[a2.status])
       })
   },
