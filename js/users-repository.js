@@ -1,6 +1,8 @@
 const atob = require('atob')
 const database = require('./database')
 
+const safeUserColumns = 'id, email, name, role, status'
+
 const createProperty = async (property, userId) => {
   const query = `INSERT INTO properties (address, city, county, state, description, userId) 
     VALUES ('${property.address || ''}', '${property.city || ''}', '${property.county || ''}', '${property.state || ''}', '${property.description || ''}', '${userId}');`
@@ -20,6 +22,21 @@ module.exports = {
     }
     return rows[0]
   },
+  async updateUser (userId, options) {
+    let updates = []
+    if (['active', 'closed'].includes(options.status)) {
+      updates.push(`status = '${options.status}'`)
+    }
+    if (!updates.length) throw new Error('No updates provided')
+
+    const query = `
+      UPDATE users SET ${updates.join(', ')}
+      WHERE id = ${userId} 
+      RETURNING ${safeUserColumns};
+    `
+    return database.query(query)
+      .then(rows => rows.length === 1 ? rows[0] : { error: true })
+  },
   async deleteUser (userId) {
     return database.query(`DELETE FROM users WHERE id = '${userId}'`)
   },
@@ -38,13 +55,13 @@ module.exports = {
   createProperty,
   async getUser (email, password) {
     const pass = atob(password)
-    return database.query(`SELECT id, email, name, role FROM users WHERE email = '${email}' AND password = crypt('${pass}', password);`)
+    return database.query(`SELECT ${safeUserColumns} FROM users WHERE email = '${email}' AND password = crypt('${pass}', password);`)
       .then(rows => {
         return rows.length === 1 ? rows[0] : undefined
       })
   },
   async getClients (userId) {
-    const query = `SELECT id, email, name, role ` +
+    const query = `SELECT ${safeUserColumns} ` +
     `FROM users ` +
     `WHERE role = 'client'`
     return database.query(query)

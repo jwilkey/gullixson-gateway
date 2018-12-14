@@ -7,6 +7,11 @@ router.get('/clients', async (req, res) => {
   res.json(clients)
 })
 
+router.post('/clients/:id', async (req, res) => {
+  const user = await usersRepository.updateUser(req.params.id, req.body)
+  res.json(user)
+})
+
 router.delete('/clients/:id', async (req, res) => {
   await usersRepository.deleteUser(req.params.id)
   res.json({ deleted: true })
