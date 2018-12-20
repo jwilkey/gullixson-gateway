@@ -35,8 +35,13 @@ router.post('/:id/state', async (req, res) => {
   res.json({ success: true })
 })
 
-router.post('/:id/forms/tds', async (req, res) => {
-  const file = await formFiller.fillTds(req.body, req.params.id)
+router.get('/forms/ssc', async (req, res) => {
+  const fdf = await formFiller.getTemplate('ssc')
+  res.json(fdf)
+})
+
+router.post('/:id/forms/:form', async (req, res) => {
+  const file = await formFiller.fillForm(req.params.id, req.params.form, req.body)
   res.json({ file })
 })
 

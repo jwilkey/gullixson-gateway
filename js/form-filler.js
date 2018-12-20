@@ -4,20 +4,20 @@ const fs = require('fs')
 const aws = require('./aws')
 
 module.exports = {
-  async fillTds (options, user) {
+  async fillForm (user, form, options) {
     return new Promise((resolve, reject) => {
-      var sourcePDF = require.resolve('../forms/tds.pdf')
-      var destinationPDF = sourcePDF.replace('tds.pdf', `tds_${uuid.v4()}.pdf`)
+      var sourcePDF = require.resolve(`../forms/${form}.pdf`)
+      var destinationPDF = sourcePDF.replace(`${form}.pdf`, `${form}_${uuid.v4()}.pdf`)
 
       pdfFiller.fillForm(sourcePDF, destinationPDF, options, function (err) {
         if (err) throw err
         fs.readFile(destinationPDF, (err, data) => {
           if (err) throw new Error('Failed to read pdf file')
-          aws.put(user, 'tds.pdf', data)
+          aws.put(user, `${form}.pdf`, data)
             .then(awsKey => {
               fs.unlink(destinationPDF, err => {
                 if (err) { console.error(err) }
-                console.log('Temp TDS Deleted')
+                console.log(`Temp ${form} Deleted`)
               })
               resolve(awsKey)
             })
