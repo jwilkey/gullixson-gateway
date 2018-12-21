@@ -21,7 +21,7 @@ router.get('/:id/appointments', async (req, res) => {
 })
 
 router.post('/:id/appointments', async (req, res) => {
-  await appointmentsRepository.createAppointment(req.params.id, req.body.date, req.body.time, req.body.status)
+  await appointmentsRepository.createAppointment(req.params.id, req.body)
   res.json({ success: true })
 })
 

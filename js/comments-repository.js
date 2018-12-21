@@ -6,10 +6,11 @@ module.exports = {
   },
   async createComment (comment) {
     const author = comment.authorId || comment.userId
+    const message = database.safeString(comment.message)
     const tagsJson = !comment.tags ? null : JSON.stringify(comment.tags)
     const query = `
       INSERT INTO comments (userId, authorId, tags, message) VALUES (
-        '${comment.userId}', '${author}', '${tagsJson}', '${comment.message}'
+        '${comment.userId}', '${author}', '${tagsJson}', '${message}'
       ) RETURNING *;`
     const rows = await database.query(query)
     return rows[0]

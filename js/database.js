@@ -18,5 +18,8 @@ module.exports = {
         client.end()
       })
     })
+  },
+  safeString (s) {
+    return s.replace(`''`, `'`)
   }
 }

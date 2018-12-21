@@ -3,10 +3,10 @@ const database = require('./database')
 const statusSort = { declined: -2, canceled: -1, pending: 0, scheduled: 1, completed: 10 }
 
 module.exports = {
-  async createAppointment (userId, date, time, status) {
+  async createAppointment (userId, { date, time, status, label }) {
     const insertAppointmentQuery = `
-      INSERT INTO appointments (date, time, status) VALUES (
-        '${date}', '${time}', '${status}'
+      INSERT INTO appointments (date, time, status, label) VALUES (
+        '${date}', '${time}', '${status}', '${database.safeString(label)}'
       ) RETURNING *;`
     const rows = await database.query(insertAppointmentQuery)
 
@@ -18,7 +18,7 @@ module.exports = {
     return database.query(usersAppointmentsQuery)
   },
   async getAppointments (userId) {
-    const query = `SELECT appointments.id, appointments.date, appointments.time, appointments.status ` +
+    const query = `SELECT appointments.id, appointments.date, appointments.time, appointments.status, appointments.label ` +
     `FROM appointments, usersAppointments ` +
     `WHERE appointments.id = usersAppointments.appointmentId ` +
     `AND usersAppointments.userId = ${userId};`
@@ -33,8 +33,9 @@ module.exports = {
       })
   },
   async updateAppointment (appointment) {
+    const label = database.safeString(appointment.label)
     const query = `
-      UPDATE appointments SET date = '${appointment.date}', time = '${appointment.time}', status = '${appointment.status}' 
+      UPDATE appointments SET date = '${appointment.date}', time = '${appointment.time}', status = '${appointment.status}', label = '${label}' 
       WHERE id = ${appointment.id} 
       RETURNING *;
     `
