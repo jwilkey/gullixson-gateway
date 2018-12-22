@@ -1,6 +1,7 @@
 var express = require('express')
 var router = express.Router()
 const commentsRepository = require('../js/comments-repository')
+const emailer = require('../js/emailer')
 
 router.get('/:userId', async (req, res) => {
   const comments = await commentsRepository.getComments(req.params.userId)
@@ -9,6 +10,7 @@ router.get('/:userId', async (req, res) => {
 
 router.post('/', async (req, res) => {
   const comment = await commentsRepository.createComment(req.body)
+  emailer.commentNotification(comment)
   res.json(comment)
 })
 

@@ -11,6 +11,7 @@ module.exports = {
     return new Promise((resolve, reject) => {
       client.query(sql, (err, res) => {
         if (err) {
+          console.error(err)
           reject(err)
         } else {
           resolve(res.rows)
@@ -20,6 +21,6 @@ module.exports = {
     })
   },
   safeString (s) {
-    return s.replace(`''`, `'`)
+    return s ? s.replace(`''`, `'`) : undefined
   }
 }

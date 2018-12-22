@@ -15,7 +15,8 @@ module.exports = {
       INSERT INTO usersAppointments (userId, appointmentId) 
       VALUES ('${userId}', '${apptId}');
     `
-    return database.query(usersAppointmentsQuery)
+    await database.query(usersAppointmentsQuery)
+    return rows[0]
   },
   async getAppointments (userId) {
     const query = `SELECT appointments.id, appointments.date, appointments.time, appointments.status, appointments.label ` +
@@ -34,12 +35,14 @@ module.exports = {
   },
   async updateAppointment (appointment) {
     const label = database.safeString(appointment.label)
+    const labelQuery = label ? `, label = '${label}'` : ''
     const query = `
-      UPDATE appointments SET date = '${appointment.date}', time = '${appointment.time}', status = '${appointment.status}', label = '${label}' 
+      UPDATE appointments SET date = '${appointment.date}', time = '${appointment.time}', status = '${appointment.status}'${labelQuery}
       WHERE id = ${appointment.id} 
       RETURNING *;
     `
-    return database.query(query)
+    const rows = await database.query(query)
+    return rows.length === 1 ? rows[0] : undefined
   },
   async deleteAppointment (appointment) {
     const query = `

@@ -4,6 +4,7 @@ const appointmentsRepository = require('../js/appointments-repository')
 const usersRepository = require('../js/users-repository')
 const formFiller = require('../js/form-filler')
 const aws = require('../js/aws')
+const emailer = require('../js/emailer')
 
 router.post('/', async (req, res) => {
   await usersRepository.createUser(req.body.email, req.body.password, req.body.name, req.body.role, req.body.property)
@@ -21,7 +22,9 @@ router.get('/:id/appointments', async (req, res) => {
 })
 
 router.post('/:id/appointments', async (req, res) => {
-  await appointmentsRepository.createAppointment(req.params.id, req.body)
+  const userId = req.params.id
+  const appointment = await appointmentsRepository.createAppointment(userId, req.body)
+  emailer.appointmentNotification(userId, appointment)
   res.json({ success: true })
 })
 
@@ -41,7 +44,10 @@ router.get('/forms/ssc', async (req, res) => {
 })
 
 router.post('/:id/forms/:form', async (req, res) => {
-  const file = await formFiller.fillForm(req.params.id, req.params.form, req.body)
+  const userId = req.params.id
+  const form = req.params.form
+  const file = await formFiller.fillForm(userId, form, req.body)
+  emailer.formNotification(userId, form)
   res.json({ file })
 })
 
@@ -61,8 +67,10 @@ router.get('/:id/files', async (req, res) => {
   res.json(list)
 })
 
-router.post('/appointments', async (req, res) => {
+router.patch('/:id/appointments', async (req, res) => {
+  const userId = req.params.id
   const updated = await appointmentsRepository.updateAppointment(req.body)
+  emailer.appointmentNotification(userId, updated)
   res.json(updated)
 })
 
