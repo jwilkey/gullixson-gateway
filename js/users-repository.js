@@ -52,6 +52,9 @@ module.exports = {
     const rows = await database.query(`SELECT * FROM usersState WHERE userId = '${userId}' AND key = '${key}';`)
     return rows.length === 1 ? safeParse(rows[0]) : {}
   },
+  async deleteUserState (userId, key) {
+    return database.query(`DELETE FROM usersState WHERE userId = ${userId} AND key = '${key}'`)
+  },
   createProperty,
   async getUser (email, password) {
     const pass = atob(password)

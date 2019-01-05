@@ -33,6 +33,11 @@ router.get('/:id/state/:key', async (req, res) => {
   res.json(state)
 })
 
+router.delete('/:id/state/:key', async (req, res) => {
+  const state = await usersRepository.deleteUserState(req.params.id, req.params.key)
+  res.json(state)
+})
+
 router.post('/:id/state', async (req, res) => {
   await usersRepository.saveUserState(req.params.id, req.body.key, req.body.value)
   res.json({ success: true })
