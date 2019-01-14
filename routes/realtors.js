@@ -3,7 +3,7 @@ var router = express.Router()
 const usersRepository = require('../js/users-repository')
 
 router.get('/clients', async (req, res) => {
-  const clients = await usersRepository.getClients()
+  const clients = await usersRepository.getUsers()
   res.json(clients)
 })
 

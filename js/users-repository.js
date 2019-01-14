@@ -73,6 +73,11 @@ module.exports = {
     `WHERE role = 'client'`
     return database.query(query)
   },
+  async getUsers () {
+    const query = `SELECT ${safeUserColumns} ` +
+    `FROM users;`
+    return database.query(query)
+  },
   async getProperty (userId) {
     return database.query(`SELECT * FROM properties WHERE userId = '${userId}';`)
       .then(rows => rows.length === 1 ? rows[0] : undefined)
