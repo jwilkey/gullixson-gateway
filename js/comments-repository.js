@@ -2,7 +2,7 @@ const database = require('./database')
 
 module.exports = {
   async getComments (userId) {
-    return database.query(`SELECT * FROM comments WHERE userId = ${userId}`)
+    return database.query(`SELECT comments.*, users.name FROM comments, users WHERE comments.userId = ${userId} AND comments.authorid = users.id;`)
   },
   async createComment (comment) {
     const author = comment.authorId || comment.userId
