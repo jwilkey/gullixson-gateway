@@ -1,8 +1,9 @@
 const email = require('emailjs')
 const usersRepository = require('./users-repository')
+const aws = require('./aws')
 const moment = require('moment')
 
-const send = async (emailAddress, subject, message) => {
+const send = async (emailAddress, subject, message, attachment) => {
   const user = process.env.EMAIL_USER
   const password = process.env.EMAIL_PASSWORD
   const host = process.env.EMAIL_SERVER
@@ -20,7 +21,8 @@ const send = async (emailAddress, subject, message) => {
       text: message,
       from: 'Gullixson App <app@gullixson.com>',
       to,
-      subject
+      subject,
+      attachment
     }, (err, m) => {
       if (err) {
         console.error(err)
@@ -33,6 +35,19 @@ const send = async (emailAddress, subject, message) => {
 }
 
 module.exports = {
+  async shareFile (userId, emailTo, awsKey) {
+    const emailFrom = await usersRepository.getName(userId)
+    const file = await aws.get(awsKey)
+    const fileString = file.Body.toString('base64')
+
+    const attachments = [{
+      data: fileString, name: awsKey, type: 'application/pdf', encoded: true
+    }]
+    return send(emailTo,
+      `A file has been shared with you`,
+      `${emailFrom} has shared the attached file with you.`,
+      attachments)
+  },
   async appointmentNotification (userId, appointment) {
     const email = await usersRepository.getEmail(userId)
     if (!email) { throw new Error('Email not found') }

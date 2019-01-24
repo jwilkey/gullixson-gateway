@@ -43,6 +43,8 @@ router.post('/:id/state', async (req, res) => {
   res.json({ success: true })
 })
 
+// FORMS & FILES
+
 router.get('/forms/ssc', async (req, res) => {
   const fdf = await formFiller.getTemplate('ssc')
   res.json(fdf)
@@ -62,6 +64,11 @@ router.get('/:id/files/:file', async (req, res) => {
   res.send(awsResource.Body)
 })
 
+router.post('/:id/files/share', async (req, res) => {
+  await emailer.shareFile(req.params.id, req.body.email, req.body.file)
+  res.json({ success: true })
+})
+
 router.get('/:id/files/url/:file', async (req, res) => {
   const url = aws.getSignedUrl(req.params.file)
   res.json({ url })
@@ -71,6 +78,8 @@ router.get('/:id/files', async (req, res) => {
   const list = await aws.list(req.params.id)
   res.json(list)
 })
+
+// APPOINTMENTS
 
 router.patch('/:id/appointments', async (req, res) => {
   const userId = req.params.id

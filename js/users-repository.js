@@ -67,6 +67,10 @@ module.exports = {
     const rows = await database.query(`SELECT email FROM users WHERE id = ${userId};`)
     return rows.length === 1 ? rows[0].email : undefined
   },
+  async getName (userId) {
+    const rows = await database.query(`SELECT name FROM users WHERE id = ${userId};`)
+    return rows.length === 1 ? rows[0].name : undefined
+  },
   async getClients (userId) {
     const query = `SELECT ${safeUserColumns} ` +
     `FROM users ` +
