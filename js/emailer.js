@@ -19,7 +19,7 @@ const send = async (emailAddress, subject, message, attachment) => {
   return new Promise((resolve, reject) => {
     server.send({
       text: message,
-      from: 'Gullixson App <app@gullixson.com>',
+      from: 'Gullixson App <${process.env.EMAIL_FROM_ADDRESS}>',
       to,
       subject,
       attachment
@@ -66,7 +66,7 @@ module.exports = {
       `You have completed the ${form.toUpperCase()} form. It is now available for review in the Gullixson app.`)
   },
   async commentNotification (comment) {
-    if (comment.userId === comment.authorId) {
+    if (comment.userid === comment.authorid) {
       return
     }
     const email = await usersRepository.getEmail(comment.userid)
