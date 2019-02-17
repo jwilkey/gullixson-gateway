@@ -66,6 +66,9 @@ module.exports = {
       `You have completed the ${form.toUpperCase()} form. It is now available for review in the Gullixson app.`)
   },
   async commentNotification (comment) {
+    if (comment.userId === comment.authorId) {
+      return
+    }
     const email = await usersRepository.getEmail(comment.userid)
     if (!email) { throw new Error('Email not found') }
     return send(email,
