@@ -2,6 +2,7 @@ const email = require('emailjs')
 const usersRepository = require('./users-repository')
 const aws = require('./aws')
 const moment = require('moment')
+const adminEmail = process.env.EMAIL_ADMIN_ADDRESS
 
 const send = async (emailAddress, subject, message, attachment) => {
   const user = process.env.EMAIL_USER
@@ -19,7 +20,7 @@ const send = async (emailAddress, subject, message, attachment) => {
   return new Promise((resolve, reject) => {
     server.send({
       text: message,
-      from: 'Gullixson App <${process.env.EMAIL_FROM_ADDRESS}>',
+      from: `Gullixson App <${process.env.EMAIL_FROM_ADDRESS}>`,
       to,
       subject,
       attachment
@@ -49,31 +50,39 @@ module.exports = {
       attachments)
   },
   async appointmentNotification (userId, appointment) {
-    const email = await usersRepository.getEmail(userId)
-    if (!email) { throw new Error('Email not found') }
+    const emailAddress = await usersRepository.getEmail(userId)
+    if (!emailAddress) { throw new Error('Email not found') }
     const date = moment(appointment.date, 'YYYY-MM-DD').format('MMM Do')
     const time = moment(appointment.time, 'H:mm').format('hh:mm A')
     const label = appointment.label ? ` (${appointment.label})` : ''
-    return send(email,
+    return send(emailAddress,
       `Appointment ${appointment.status}: ${date}`,
       `An appointment${label} at your property is ${appointment.status} for ${date} at ${time}. You may login to the Gullixson App to review this appointment.`)
   },
   async formNotification (userId, form) {
-    const email = await usersRepository.getEmail(userId)
-    if (!email) { throw new Error('Email not found') }
-    return send(email,
+    const emailAddress = await usersRepository.getEmail(userId)
+    if (!emailAddress) { throw new Error('Email not found') }
+    const name = await usersRepository.getName(userId)
+    send(adminEmail,
+      `${form.toUpperCase()} completed by ${name}`,
+      `${name} has completed the ${form.toUpperCase()} form. It is now available for review in the Gullixson app.`)
+    return send(emailAddress,
       `Form completed: ${form.toUpperCase()}`,
       `You have completed the ${form.toUpperCase()} form. It is now available for review in the Gullixson app.`)
   },
   async commentNotification (comment) {
     if (comment.userid === comment.authorid) {
-      return
+      const name = await usersRepository.getName(comment.userid)
+      return send(adminEmail,
+        `New comment from ${name}`,
+        `There is a new comment in the Gullixson app from ${name}. "${comment.message}"`)
+    } else {
+      const emailAddress = await usersRepository.getEmail(comment.userid)
+      if (!emailAddress) { throw new Error('Email not found') }
+      return send(emailAddress,
+        `New message in the Gullixson App`,
+        `You have a new message in the Gullixson app. "${comment.message}"`)
     }
-    const email = await usersRepository.getEmail(comment.userid)
-    if (!email) { throw new Error('Email not found') }
-    return send(email,
-      `New message in the Gullixson App`,
-      `You have a new message in the Gullixson app. "${comment.message}"`)
   },
   send
 }
